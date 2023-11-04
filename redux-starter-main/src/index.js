@@ -2,17 +2,15 @@ import store from "./store/configureStore";
 // import { addTask, removeTask, completedTask } from "./store/tasks";
 // import { addemployee } from "./store/Employee";
 import axios from "axios";
-import { getTasks, fetchTasks } from "./store/tasks";
+import { getTasks, fetchTasks, addNewTask } from "./store/tasks";
+import { apiCallBegan } from "./store/api";
+import { loadTasks } from "./store/tasks";
 
-store.dispatch({
-  type: "apiRequest",
-  payload: {
-    url: "/tasks",
-    onSuccess: "tasks/getTasks",
-    onError: "SHOW_ERROR",
-  },
-});
-console.log(getTasks());
+const dd = store.dispatch(loadTasks());
+store.dispatch(addNewTask({ task: "complete task for this exercise" }));
+
+// console.log(getTasks());
+
 //calling using asyncthuck
 
 // store.dispatch(fetchTasks());

@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../utils/http";
+import { apiCallBegan } from "./api";
+import { get } from "lodash";
 let id = 0;
 const initialState = {
   tasks: [],
@@ -7,32 +9,43 @@ const initialState = {
   error: null,
 };
 
-export const fetchTasks = createAsyncThunk(
-  "fetchTasks",
-  async (a, { rejectWithValue }) => {
-    try {
-      const response = await axios.get("/tasks");
-      return { tasks: response.data };
-    } catch (error) {
-      return rejectWithValue({ error: error.message });
-    }
-  }
-);
+// export const fetchTasks = createAsyncThunk(
+//   "fetchTasks",
+//   async (a, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get("/tasks");
+//       return { tasks: response.data };
+//     } catch (error) {
+//       return rejectWithValue({ error: error.message });
+//     }
+//   }
+// );
 
 const taskSlice = createSlice({
   name: "tasks",
   initialState: initialState,
   reducers: {
     //action : function
+    apiRequested: (state, action) => {
+      state.loading = true;
+    },
+    apiRequestFailed: (state, action) => {
+      state.loading = false;
+    },
+
     getTasks: (state, action) => {
       state.tasks = action.payload;
+      state.loading = false;
     },
     addTask: (state, action) => {
-      state.tasks.push({
-        id: ++id,
-        task: action.payload.task,
-        completed: action.payload.completed,
-      });
+      state.tasks.push(
+        action.payload
+        // {
+        //   id: ++id,
+        //   task: action.payload.task,
+        //   completed: action.payload.completed,
+        // }
+      );
     },
     removeTask: (state, action) => {
       const index = state.tasks.findIndex(
@@ -47,26 +60,52 @@ const taskSlice = createSlice({
       state.tasks[index].completed = true;
     },
   },
-  extraReducers: {
-    [fetchTasks.pending]: (state, action) => {
-      state.loading = true;
-    },
 
-    [fetchTasks.fulfilled]: (state, action) => {
-      state.tasks = action.payload.tasks;
-      state.loading = false;
-    },
-    [fetchTasks.rejected]: (state, action) => {
-      state.error = action.payload.error;
-      state.loading = false;
-    },
-  },
+  // extraReducers: {
+  //   [fetchTasks.pending]: (state, action) => {
+  //     state.loading = true;
+  //   },
+
+  //   [fetchTasks.fulfilled]: (state, action) => {
+  //     state.tasks = action.payload.tasks;
+  //     state.loading = false;
+  //   },
+  //   [fetchTasks.rejected]: (state, action) => {
+  //     state.error = action.payload.error;
+  //     state.loading = false;
+  //   },
+  // },
 });
 
 // console.log(taskSlice);
-export const { getTasks, addTask, removeTask, completedTask } =
-  taskSlice.actions;
+export const {
+  apiRequested,
+  apiRequestFailed,
+  getTasks,
+  addTask,
+  removeTask,
+  completedTask,
+} = taskSlice.actions;
 export default taskSlice.reducer;
+const taskurl = "/tasks";
+export const loadTasks = () => {
+  return apiCallBegan({
+    url: taskurl,
+    onStart: apiRequested.type,
+    onSuccess: getTasks.type,
+    onError: apiRequestFailed.type,
+  });
+};
+
+//adding new tasks
+
+export const addNewTask = (task) =>
+  apiCallBegan({
+    url: taskurl,
+    method: "POST",
+    data: task,
+    onSuccess: addTask.type,
+  });
 
 //Action Types
 
