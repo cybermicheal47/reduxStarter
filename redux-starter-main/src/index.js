@@ -4,9 +4,18 @@ import store from "./store/configureStore";
 import axios from "axios";
 import { getTasks, fetchTasks } from "./store/tasks";
 
+store.dispatch({
+  type: "apiRequest",
+  payload: {
+    url: "/tasks",
+    onSuccess: "tasks/getTasks",
+    onError: "SHOW_ERROR",
+  },
+});
+console.log(getTasks());
 //calling using asyncthuck
 
-store.dispatch(fetchTasks());
+// store.dispatch(fetchTasks());
 
 // //calling api using function
 // const gettingTasks = async () => {
