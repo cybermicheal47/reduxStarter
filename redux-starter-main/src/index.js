@@ -4,10 +4,12 @@ import store from "./store/configureStore";
 import axios from "axios";
 import { getTasks, fetchTasks, addNewTask } from "./store/tasks";
 import { apiCallBegan } from "./store/api";
-import { loadTasks } from "./store/tasks";
+import { loadTasks, updatecompleted, deleteTask } from "./store/tasks";
 
 const dd = store.dispatch(loadTasks());
-store.dispatch(addNewTask({ task: "complete task for this exercise" }));
+//store.dispatch(addNewTask({ task: "complete task for this exercise" }));
+store.dispatch(updatecompleted({ id: 4, completed: true }));
+store.dispatch(deleteTask({ id: 1 }));
 
 // console.log(getTasks());
 

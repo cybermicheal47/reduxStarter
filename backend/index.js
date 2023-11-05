@@ -10,7 +10,7 @@ const tasks = [
   { id: 1, description: "Task 1", userId: 1, resolved: true },
   { id: 2, description: "Task 2", userId: 1 },
   { id: 3, description: "Task 3", userId: 2 },
-  { id: 4, description: "Task 4" },
+  { id: 4, description: "Task 4", completed: false },
 ];
 
 // Get all tasks
@@ -20,7 +20,12 @@ app.get("/api/tasks", (req, res) => {
 
 // Add a new task
 app.post("/api/tasks", (req, res) => {
-  const task = { id: Date.now(), resolved: false, ...req.body };
+  const task = {
+    id: Date.now(),
+    resolved: false,
+    completed: false,
+    ...req.body,
+  };
   tasks.push(task);
   res.json(task);
 });
@@ -33,6 +38,11 @@ app.patch("/api/tasks/:id", (req, res) => {
   if ("resolved" in req.body) {
     task.resolved = req.body.resolved;
   }
+
+  if ("completed" in req.body) {
+    task.completed = req.body.completed;
+  }
+
   if ("userId" in req.body) {
     task.userId = req.body.userId;
   }

@@ -57,7 +57,7 @@ const taskSlice = createSlice({
       const index = state.tasks.findIndex(
         (task) => task.id === action.payload.id
       );
-      state.tasks[index].completed = true;
+      state.tasks[index].completed = action.payload.completed;
     },
   },
 
@@ -105,6 +105,26 @@ export const addNewTask = (task) =>
     method: "POST",
     data: task,
     onSuccess: addTask.type,
+  });
+
+//updating existing tasks
+export const updatecompleted = (task) => {
+  const apiUrl = `${taskurl}/${task.id}`; // Construct the URL
+  console.log("API URL:", apiUrl); // Log the URL
+  return apiCallBegan({
+    url: apiUrl,
+    method: "PATCH",
+    data: task,
+    onSuccess: completedTask.type,
+  });
+};
+
+//deleting tasks
+export const deleteTask = (task) =>
+  apiCallBegan({
+    url: `${taskurl}/${task.id}`,
+    method: "DELETE",
+    onSuccess: removeTask.type,
   });
 
 //Action Types
